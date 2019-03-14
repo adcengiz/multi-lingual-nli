@@ -13,7 +13,7 @@ fr: Frech
 hi: Hindi
 ru: Russian
 th: Thai
-tr: Turish
+tr: Turkish
 vi: Vietnamese
 zh: Chinese
 ```

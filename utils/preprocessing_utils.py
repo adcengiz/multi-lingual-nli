@@ -11,12 +11,15 @@ import torch
 import functools
 import numpy as np
 import pandas as pd
+from setuptools import setup
+from docopt import docopt
 from collections import Counter
 from collections import defaultdict
 import spacy
 from torch.utils.data import Dataset
 
-vector_path = "../../data/aligned_embeddings"
+aligned_vector_path = "../../data/aligned_embeddings"
+glove_path = ## TODO
 xnli_path = "../../data/XNLI"
 mnli_path = "../../data/MultiNLI"
 snli_path = "../../data/SNLI"
@@ -25,10 +28,9 @@ languages = ["ar", "bg", "de", "el", "en", "es", "fr", "hi", "ru", "th", "tr", "
 reg = re.compile("[%s]" % re.escape(string.punctuation))
 PAD_IDX = 0
 UNK_IDX = 1
-MAX_SENTENCE_LENGTH = 100
 BATCH_SIZE = 64
 
-def load_vectors(fname):
+def load_aligned_vectors(fname):
     fin = io.open(fname, "r", encoding="utf-8", newline="\n", errors="ignore")
     n, d = map(int, fin.readline().split())
     data = {}
@@ -37,15 +39,24 @@ def load_vectors(fname):
         data[tokens[0]] = [*map(float, tokens[1:])]
     return data
 
-def build_lang_dicts(langs = languages):
+def load_glove(fname):
+    fin = io.open(fname, "r", encoding="utf-8", newline="\n", errors="ignore")
+    n, d = map(int, fin.readline().split())
+    data = {}
+    for line in fin:
+        tokens = line.rstrip().split(" ")
+        data[tokens[0]] = [*map(float, tokens[1:])]
+    return data
+
+def build_aligned_vector_dict(langs = languages):
 	language_dict = defaultdict(dict)
 	for x in langs:
 	    print ("loading vectors for", x)
-	    fname = "{}/wiki.{}.align.vec".format(vector_path, x)
-	    language_dict[x]["vectors"] = load_vectors(fname)
+	    fname = "{}/wiki.{}.align.vec".format(aligned_vector_path, x)
+	    language_dict[x]["vectors"] = load_aligned_vectors(fname)
     return language_dict
 
-def read_xnli():
+def read_xnli(xnli_path):
 	xnli_dev = pd.read_csv("{}/xnli.{}.tsv".format(xnli_path, "dev"), sep="\t")
 	xnli_test = pd.read_csv("{}/xnli.{}.tsv".format(xnli_path, "test"), sep="\t")
 	return xnli_dev, xnli_test
@@ -59,26 +70,24 @@ def read_enli(path_mnli = mnli_path, path_snli = snli_path):
 	snli_test = pd.read_json("{}/snli_1.0_{}.jsonl".format(mnli_path, "test"), lines=True)
 	return mnli_train, mnli_dev, mnli_test, snli_train, snli_dev, snli_test
 
-def read_snli():
-	## TODO
 
-def tokenize_dataset(dataset, remove_punc=False):
-all_s1_tokens = []
-all_s2_tokens = []
-for s in ["sentence1", "sentence2"]:
-    if remove_punc:
-        punc = [*string.punctuation]
-        dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
-        apply(lambda x: "".join(c for c in x if c not in punc).lower().split(" "))
-    else:
-        dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
-        apply(lambda x: x.lower().split(" "))
-dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
-dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
-all_tokens = all_s1_tokens + all_s2_tokens
-return dataset, all_tokens
+def tokenize_xnli(dataset, remove_punc=False):
+	all_s1_tokens = []
+	all_s2_tokens = []
+	for s in ["sentence1", "sentence2"]:
+	    if remove_punc:
+	        punc = [*string.punctuation]
+	        dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
+	        apply(lambda x: "".join(c for c in x if c not in punc).lower().split(" "))
+	    else:
+	        dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
+	        apply(lambda x: x.lower().split(" "))
+	dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
+	dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
+	all_tokens = all_s1_tokens + all_s2_tokens
+	return dataset, all_tokens
 
-def tokenize_enli(dataset, remove_punc=True):
+def tokenize_enli(dataset, remove_punc=False):
     punc = string.punctuation
     all_s1_tokens = []
     all_s2_tokens = []
@@ -89,12 +98,10 @@ def tokenize_enli(dataset, remove_punc=True):
         else:
             dataset["sentence{}_tokenized".format(s)] = dataset["sentence{}".format(s)].\
             apply(lambda x: (reg.sub("", x) + " .").lower().split(" "))
-    print ("Tokenizing done.")
+    print ("Tokenizing training data.")
     dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
     dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
-    print ("Token collection done.")
     all_tokens = all_s1_tokens + all_s2_tokens
-    print ("Concatenation done.")
     return dataset, all_tokens
 
 
@@ -135,10 +142,10 @@ class ENLILang:
     	return self
 
 class NLIDataset(Dataset):
-    def __init__(self, lang, max_sentence_length=MAX_SENTENCE_LENGTH):
-        self.sentence1, self.sentence2, self.labels = lang.tokenized_train_data["sentence1_tokenized"].values, \
-                                                      lang.tokenized_train_data["sentence2_tokenized"].values, \
-                                                      lang.tokenized_train_data["gold_label"].values
+    def __init__(self, tokenized_dataset, max_sentence_length):
+        self.sentence1, self.sentence2, self.labels = tokenized_dataset["sentence1_tokenized"].values, \
+                                                      tokenized_dataset["sentence2_tokenized"].values, \
+                                                      tokenized_dataset["gold_label"].values
         self.max_sentence_length = max_sentence_length
         self.token2id, self.id2token = lang.token2id, lang.id2token
         
@@ -168,7 +175,7 @@ class NLIDataset(Dataset):
         
         return sentence1_list + sentence2_list + [label]
 
-def nli_func(batch, max_sent_length):
+def nli_collate_func(batch, max_sent_length):
     s1_data, s2_data = [], []
     s1_mask, s2_mask = [], []
     s1_lengths, s2_lengths = [], []

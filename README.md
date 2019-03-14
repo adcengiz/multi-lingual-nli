@@ -1,6 +1,22 @@
 # multi-lingual-nli
 Investigating the effects of incorporating aligned cross-lingual word embeddings in multilingual NLI tasks 
 
+The languages are referred by the following codes throughout the project:
+```
+en: English
+ar: Arabic
+bg: Bulgarian
+de: German
+el: Greek
+es: Spanish
+fr: Frech
+hi: Hindi
+ru: Russian
+th: Thai
+tr: Turish
+vi: Vietnamese
+zh: Chinese
+```
 To run the models, your directory should look like this:
 ```
 

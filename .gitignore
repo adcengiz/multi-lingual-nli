@@ -1,3 +1,5 @@
 
 *.jsonl
 *.tsv
+*.txt
+*.icloud

@@ -61,15 +61,17 @@ def read_xnli(xnli_path):
 	xnli_test = pd.read_csv("{}/xnli.{}.tsv".format(xnli_path, "test"), sep="\t")
 	return xnli_dev, xnli_test
 
-def read_enli(path_mnli = mnli_path, path_snli = snli_path):
-	mnli_train = pd.read_json("{}/multinli_1.0_{}.jsonl".format(mnli_path, "train"), lines=True)
-	mnli_dev = pd.read_json("{}/multinli_1.0_{}.jsonl".format(mnli_path, "dev"), lines=True)
-	mnli_test = pd.read_json("{}/multinli_1.0_{}.jsonl".format(mnli_path, "test"), lines=True)
-	snli_train = pd.read_json("{}/snli_1.0_{}.jsonl".format(mnli_path, "train"), lines=True)
-	snli_dev = pd.read_json("{}/snli_1.0_{}.jsonl".format(mnli_path, "dev"), lines=True)
-	snli_test = pd.read_json("{}/snli_1.0_{}.jsonl".format(mnli_path, "test"), lines=True)
-	return mnli_train, mnli_dev, mnli_test, snli_train, snli_dev, snli_test
-
+def read_enli(nli_corpus = "snli"):
+	if nli_corpus == "snli":
+		path_ = snli_path
+	elif nli_corpus == "multinli":
+		path_ = mnli_path
+	else:
+		raise ValueError("nli_corpus shoudl be in: 'multinli', 'snli'.")
+	train = pd.read_json("{}/{}_1.0_{}.jsonl".format(path_, nli_corpus ,"train"), lines=True)
+	dev = pd.read_json("{}/{}_1.0_{}.jsonl".format(path_, nli_corpus, "dev"), lines=True)
+	test = pd.read_json("{}/{}_1.0_{}.jsonl".format(path_, nli_corpus, "test"), lines=True)
+	return train, dev, test
 
 def tokenize_xnli(dataset, remove_punc=False):
 	all_s1_tokens = []
@@ -142,12 +144,12 @@ class ENLILang:
     	return self
 
 class NLIDataset(Dataset):
-    def __init__(self, tokenized_dataset, max_sentence_length):
+    def __init__(self, tokenized_dataset, max_sentence_length, token2id, id2token):
         self.sentence1, self.sentence2, self.labels = tokenized_dataset["sentence1_tokenized"].values, \
                                                       tokenized_dataset["sentence2_tokenized"].values, \
                                                       tokenized_dataset["gold_label"].values
         self.max_sentence_length = max_sentence_length
-        self.token2id, self.id2token = lang.token2id, lang.id2token
+        self.token2id, self.id2token = token2id, id2token
         
     def __len__(self):
         return len(self.labels)

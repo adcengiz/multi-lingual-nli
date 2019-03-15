@@ -9,7 +9,7 @@ bg: Bulgarian
 de: German
 el: Greek
 es: Spanish
-fr: Frech
+fr: French
 hi: Hindi
 ru: Russian
 th: Thai

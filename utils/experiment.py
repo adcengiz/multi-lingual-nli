@@ -12,6 +12,7 @@ import io
 import os
 from underthesea import word_tokenize
 from collections import defaultdict, Counter
+from sacrebleu import sacrebleu
 import jieba
 import numpy as np
 from docopt import docopt
@@ -28,7 +29,6 @@ import preprocessing_utils
 import nli_models
 
 train_dataset_dir = "../../data/"
-
 mnli_path = "../../data/MultiNLI"
 snli_path = "../../data/SNLI"
 xnli_path = "../../data/XNLI"
@@ -42,7 +42,9 @@ languages = ["ar", "bg", "de", "el", "en", "es", "fr", "hi", "ru", "th", "tr", "
 
 lang2vector = preprocessing_utils.build_aligned_vector_dict(langs = languages)
 
-def prepare_train_data(nli_corpus, VOCAB_SIZE, MAX_SENTENCE_LENGTH, BATCH_SIZE):
+## write function to prepare translation data
+
+def prepare_nli_train_data(nli_corpus, VOCAB_SIZE, MAX_SENTENCE_LENGTH, BATCH_SIZE):
 	# TODO: Add vectors
 
 	train_data, _, _ = preprocessing_utils.read_enli(nli_corpus=nli_corpus)
@@ -54,7 +56,7 @@ def prepare_train_data(nli_corpus, VOCAB_SIZE, MAX_SENTENCE_LENGTH, BATCH_SIZE):
 		collate_fn=preprocessing_utils.nli_collate_func, shuffle=False)
 	return train_loader, token2id, id2token
 
-def prepare_dev_data(dev_lang, MAX_SENTENCE_LENGTH, BATCH_SIZE, token2id, id2token):
+def prepare_nli_dev_data(dev_lang, MAX_SENTENCE_LENGTH, BATCH_SIZE, token2id, id2token):
 	# TODO: Add vectors
 
 	xnli_dev, _ = preprocessing_utils.read_xnli(xnli_path)
@@ -71,7 +73,7 @@ def prepare_dev_data(dev_lang, MAX_SENTENCE_LENGTH, BATCH_SIZE, token2id, id2tok
 		collate_fn=preprocessing_utils.nli_collate_func, shuffle=False)
 	return dev_loader
 
-def prepare_test_data(test_lang, MAX_SENTENCE_LENGTH, BATCH_SIZE, token2id, id2token):
+def prepare_nli_test_data(test_lang, MAX_SENTENCE_LENGTH, BATCH_SIZE, token2id, id2token):
 	# TODO: Add vectors
 
 	_, xnli_test = preprocessing_utils.read_xnli(xnli_path)
@@ -149,6 +151,7 @@ def accuracy(encoder_model, linear_model, loader, criterion):
 	return 100 * predicted.eq(true_labels.data.view_as(predicted)).float().mean().item()
 
 def validate_model_translation():
+	## get sacrebleu
 
 def test_model_nli(loader, encoder_model, linear_model, criterion):
 	encoder_model.eval()

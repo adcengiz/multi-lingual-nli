@@ -1,0 +1,83 @@
+parser = ArgumentParser(description='Helsinki NLI')
+parser.add_argument("--corpus",
+                    type=str,
+                    choices=('snli', 'breaking_nli', 'multinli_matched', 'multinli_mismatched', 'scitail', 'all_nli'),
+                    default='snli')
+parser.add_argument('--epochs',
+                    type=int,
+                    default=20)
+parser.add_argument('--batch_size',
+                    type=int,
+                    default=64)
+parser.add_argument("--encoder_type",
+                    type=str,
+                    choices=('BiLSTMMaxPoolEncoder',
+                             'LSTMEncoder',
+                             'HBMP'),
+                    default='HBMP')
+parser.add_argument("--activation",
+                    type=str,
+                    choices=('tanh', 'relu', 'leakyrelu'),
+                    default='relu')
+parser.add_argument("--optimizer",
+                    type=str,
+                    choices=('rprop',
+                             'adadelta',
+                             'adagrad',
+                             'rmsprop',
+                             'adamax',
+                             'asgd',
+                             'adam',
+                             'sgd'),
+                    default='adam')
+parser.add_argument('--embed_dim',
+                    type=int,
+                    default=300)
+parser.add_argument('--fc_dim',
+                    type=int,
+                    default=600)
+parser.add_argument('--hidden_dim',
+                    type=int,
+                    default=600)
+parser.add_argument('--layers',
+                    type=int,
+                    default=1)
+parser.add_argument('--dropout',
+                    type=float,
+                    default=0.1)
+parser.add_argument('--learning_rate',
+                    type=float,
+                    default=0.0005)
+parser.add_argument('--lr_patience',
+                    type=int,
+                    default=1)
+parser.add_argument('--lr_decay',
+                    type=float,
+                    default=0.99)
+parser.add_argument('--lr_reduction_factor',
+                    type=float,
+                    default=0.2)
+parser.add_argument('--weight_decay',
+                    type=float,
+                    default=0)
+parser.add_argument('--gpu',
+                    type=int,
+                    default=0)
+parser.add_argument('--preserve_case',
+                    action='store_false',
+                    dest='lower')
+parser.add_argument('--word_embedding',
+                    type=str,
+                    default='glove.840B.300d')
+parser.add_argument('--resume_snapshot',
+                    type=str,
+                    default='')
+parser.add_argument('--early_stopping_patience',
+                    type=int,
+                    default=3)
+parser.add_argument('--save_path',
+                    type=str,
+                    default='results')
+parser.add_argument('--seed',
+                    type=int,
+                    default=1234)

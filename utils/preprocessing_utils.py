@@ -12,6 +12,7 @@ import functools
 import numpy as np
 import pandas as pd
 from setuptools import setup
+from sacrebleu import sacrebleu
 from docopt import docopt
 from collections import Counter
 from collections import defaultdict
@@ -113,8 +114,8 @@ def build_vocab(all_tokens, max_vocab_size):
     id2token = [*vocab]
     token2id = dict(zip(vocab, range(2,2+len(vocab))))
     id2token = ['<PAD>', '<UNK>'] + id2token
-    token2id["<PAD>"] = PAD_IDX
-    token2id["<UNK>"] = UNK_IDX
+    token2id["<PAD>"] = 0
+    token2id["<UNK>"] = 1
     return token2id, id2token
 
 
@@ -210,5 +211,5 @@ def nli_collate_func(batch, max_sent_length):
         
     return s1_list + s2_list + [torch.from_numpy(labels)]
 
-def preprocess_main():
+def main():
 	# TODO

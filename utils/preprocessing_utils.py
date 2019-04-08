@@ -42,7 +42,7 @@ def load_aligned_vectors(fname):
 
 def load_glove(fname):
     fin = io.open(fname, "r", encoding="utf-8", newline="\n", errors="ignore")
-    n, d = map(int, fin.readline().split())
+#    n, d = map(int, fin.readline().split())
     data = {}
     for line in fin:
         tokens = line.rstrip().split(" ")
@@ -101,12 +101,11 @@ def tokenize_enli(dataset, remove_punc=False):
         else:
             dataset["sentence{}_tokenized".format(s)] = dataset["sentence{}".format(s)].\
             apply(lambda x: (reg.sub("", x) + " .").lower().split(" "))
-    print ("Tokenizing training data.")
+    print ("Tokenizing data.")
     dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
     dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
     all_tokens = all_s1_tokens + all_s2_tokens
     return dataset, all_tokens
-
 
 def build_vocab(all_tokens, max_vocab_size):
     token_counter = Counter(all_tokens)
@@ -117,7 +116,6 @@ def build_vocab(all_tokens, max_vocab_size):
     token2id["<PAD>"] = 0
     token2id["<UNK>"] = 1
     return token2id, id2token
-
 
 class XNLILang:
     def __init__(self, name, max_vocab_size):

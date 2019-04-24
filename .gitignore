@@ -23,3 +23,5 @@ HBMP/.data/multinli/__MACOSX/multinli_1.0/._.DS_Store
 HBMP/.data/multinli/__MACOSX/multinli_1.0/._Icon
 HBMP/.data/multinli/__MACOSX/multinli_1.0/._paper.pdf
 HBMP/.data/multinli/__MACOSX/._multinli_1.0
+HBMP/.vector_cache/snli_glove.840B.300d.pt
+HBMP/.vector_cache/snli_glove.840B.300d.pt

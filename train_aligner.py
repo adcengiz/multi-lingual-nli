@@ -16,6 +16,20 @@ from torch.autograd import Variable
 from models import biLSTM
 from preprocess_alignment import config_class
 
+def loss_align(en_rep, target_rep, en_c, target_c, lambda_reg):
+    """:param en_rep: output repr of eng encoder (batch_size, hidden_size)
+       :param target_rep: output repr of target encoder (batch_size, hidden_size)
+       :param en_c: contrastive sentence repr from eng encoder (batch_size, hidden_size)
+       :param target_c: contrastive sentence repr form target encoder (batch_size, hidden_size)
+       :param lambda_reg: regularization coef [default: 0.5]
+
+    Returns: L_align = l2norm (en_rep, target_rep) - lambda_reg( l2norm (en_c, target_rep) + l2norm (en_rep, target_c))
+    """
+    dist = torch.norm(en_rep - target_rep, 2)
+    c_dist = torch.norm(en_c - target_rep, 2) + torch.norm(en_rep - target_c, 2)
+    L_align = dist - lambda_reg*(c_dist)
+    return L_align
+
 def train(LSTM_src, LSTM_trg, loader, contrastive_loader, optimizer, epoch, lambda_reg=0.25):
     LSTM_src.train()
     LSTM_trg.train()

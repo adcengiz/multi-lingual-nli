@@ -390,30 +390,26 @@ def accuracy(RNN, Linear_Classifier, DataLoader, criterion):
     return 100 * predicted.eq(true_labels.data.view_as(predicted)).float().mean().item()
 
 
-n_epochs = 20
 LSTM_en = biLSTM(config.hidden_dim, weights_init, config.dropout, config.max_vocab_size, 
-                 interaction_type="concat",
-                 num_layers=1, input_size=300, src_trg = "src").to(device)
+	num_layers = 1, input_size = config.embed_dim).to(device)
 
-linear_model = Linear_Layers(hidden_size = 1024, hidden_size_2 = 128,
-                             percent_dropout = 0.1, interaction_type="concat", 
-                             classes=3, input_size=300).to(device)
+linear_model = Linear_Layers(hidden_size = config.hidden_dim * 2, hidden_size_2 = 128, 
+	percent_dropout = config.dropout, classes=3, input_size = config.embed_dim).to(device)
 
 print ("Encoder:\n", LSTM_en)
 print ("Classifier:\n", linear_model)
 
 validation_accuracy = [0]
-start_epoch = 0
-
-for epoch in range(start_epoch, start_epoch + n_epochs):
+n_epochs = 20
+for epoch in range(n_epochs):
     print ("\nepoch = "+str(epoch))
     loss_train = train(LSTM_en, linear_model, DataLoader = nli_train_loader,
                        criterion = nn.NLLLoss(),
-                       optimizer = torch.optim.Adam(list(LSTM_en.parameters()) + list(linear_model.parameters()), 
-                                                   lr=config.lr, weight_decay=0),
+                       optimizer = torch.optim.Adam(list(LSTM_en.parameters()) + list(linear_model.parameters()),
+                       	lr=config.lr, weight_decay=0),
                        epoch = epoch)
     
-    val_acc = accuracy(LSTM_en, linear_model, nli_dev_loader, nn.NLLLoss(reduction='sum'))
+    val_acc = accuracy(LSTM_en, linear_model, nli_dev_loader, nn.NLLLoss(reduction = "sum"))
     print ("\n{} Validation Accuracy = {}".format(config.val_test_lang.upper(), val_acc))
     if val_acc <= validation_accuracy[-1]:
         break

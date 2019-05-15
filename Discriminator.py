@@ -14,7 +14,7 @@ from torch.autograd import Variable
 
 class Discriminator(nn.Module):
 
-    def __init__(self, n_langs, dis_layers, dis_hidden_dim, dis_dropout. lr_slope):
+    def __init__(self, n_langs, dis_layers, dis_hidden_dim, dis_dropout, lr_slope):
 
         super(Discriminator, self).__init__()
         self.n_langs = n_langs
@@ -41,4 +41,3 @@ class Discriminator(nn.Module):
         out = self.layers(input)
         out = F.log_softmax(out, 1)
         return out
-        

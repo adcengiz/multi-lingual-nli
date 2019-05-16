@@ -4,6 +4,7 @@ import spacy
 import csv
 import sys
 import errno
+import nltk
 import glob
 import string
 import io
@@ -203,19 +204,23 @@ def create_contrastive_dataset(dataset, trg_lang):
 def read_and_tokenize_opus_data(lang="tr"):
     all_en_tokens = []
     all_target_tokens = []
-    path_en = opus_path + "/{}_en/OpenSubtitles.en-{}.en_00".format(lang, lang)
-    path_target = opus_path + "/{}_en/OpenSubtitles.en-{}.{}_00".format(lang, lang, lang)
+    path_en = opus_path + "/{}_en/en_data_00".format(lang)
+    path_target = opus_path + "/{}_en/{}_data_00".format(lang, lang)
     en_corpus = open(path_en, "r")
     target_corpus = open(path_target, "r")
     en_series = pd.Series(en_corpus.read().split("\n"))
     target_series = pd.Series(target_corpus.read().split("\n"))
     dataset = pd.DataFrame({"en":en_series, lang:target_series})
-    for i in ["en", lang]:
-        dataset["{}_tokenized".format(i)] = dataset[i].apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
-        dataset["{}_tokenized".format(i)] = dataset["{}_tokenized".format(i)].\
-        apply(lambda x:[a+".{}".format(i) for a in x])
+    if lang == "ar":
+        dataset["en_tokenized"] = dataset["en"].apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
+        dataset["en_tokenized"] = dataset["en_tokenized"].apply(lambda x:[a+".en" for a in x])
+        dataset["ar_tokenized"] = dataset["ar"].apply(lambda x: [a + ".ar" for a in nltk.tokenize.wordpunct_tokenize(x)])
+    else:
+        for i in ["en", lang]:
+            dataset["{}_tokenized".format(i)] = dataset[i].apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
+            dataset["{}_tokenized".format(i)] = dataset["{}_tokenized".format(i)].\
+            apply(lambda x:[a+".{}".format(i) for a in x])
     dataset["en_tokenized"].apply(lambda x: all_en_tokens.extend(x))
-    
     dataset["{}_tokenized".format(lang)].apply(lambda x: all_target_tokens.extend(x))
     return dataset, all_en_tokens, all_target_tokens
 

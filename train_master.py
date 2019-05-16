@@ -5,6 +5,7 @@ import spacy
 import csv
 import sys
 import errno
+import nltk
 import glob
 import string
 import io
@@ -143,15 +144,22 @@ def write_numeric_label(train, dev, test, nli_corpus="multinli"):
 def tokenize_xnli(dataset, remove_punc=False, lang="en"):
     all_s1_tokens = []
     all_s2_tokens = []
-    for s in ["sentence1", "sentence2"]:
-        punc = [*string.punctuation]
-        dataset["{}_tokenized".format(s)] = dataset["{}".format(s)].\
-        apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
-        dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
-        apply(lambda x: [a+"."+lang for a in x])
-    ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
-    ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
-    all_tokens = all_s1_tokens + all_s2_tokens
+    punc = [*string.punctuation]
+    if lang == "ar":
+        dataset["{}_tokenized".format(s)] = dataset[s].\
+        apply(lambda x: [a + ".ar" for a in nltk.tokenize.wordpunct_tokenize(x)])
+        ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
+        ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
+        all_tokens = all_s1_tokens + all_s2_tokens
+    else:
+        for s in ["sentence1", "sentence2"]:
+            dataset["{}_tokenized".format(s)] = dataset[s].\
+            apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
+            dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
+            apply(lambda x: [a+"."+lang for a in x])
+        ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
+        ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
+        all_tokens = all_s1_tokens + all_s2_tokens
     return dataset, all_tokens
 
 def build_vocab(all_tokens, max_vocab_size):

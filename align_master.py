@@ -142,8 +142,16 @@ def tokenize_xnli(dataset, remove_punc=False, lang="en"):
     all_s2_tokens = []
     punc = [*string.punctuation]
     if lang == "ar":
-        dataset["{}_tokenized".format("ar")] = dataset["ar"].\
-        apply(lambda x: [a + ".ar" for a in nltk.tokenize.wordpunct_tokenize(x)])
+        for s in ["sentence1", "sentence2"]:
+            dataset["{}_tokenized".format(s)] = dataset[s].\
+            apply(lambda x: [a + ".ar" for a in nltk.tokenize.wordpunct_tokenize(x)])
+        ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
+        ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
+        all_tokens = all_s1_tokens + all_s2_tokens
+    elif lang == "zh":
+        for s in ["sentence1", "sentence2"]:
+            dataset["{}_tokenized".format(s)] = dataset[s].\
+            apply(lambda x: [z + ".zh" for z in ' '.join(jieba.cut(x, cut_all=True)).split(" ")])
         ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
         ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
         all_tokens = all_s1_tokens + all_s2_tokens

@@ -10,15 +10,7 @@ __A more formal definition:__ Natural Language Inference, also known as Recogniz
 
 Cross-lingual NLI involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
 
-__How does it work?__ Let's say our goal is to perform NLI in German. We first train an LSTM encoder and a linear classifier on MultiNLI data. Then we make a copy of the encoder, so that we have two identical encoders; one for the source language (En) and one for the target language (De). Then, by using parallel sentence pairs in English and German (from Europarl or OpenSubtitles 2018 corpora), we align the German encoder to the English encoder so that they produce close sentence representations in the embedding space. 
-
-We use the following alignment objective:
-
-\begin{equation}
-\mathcal{L}(x, y) = dist(x, y) \\ & - \lambda \left[dist(x_c, y) + dist(x, y_c)\right] + \lambda_{adv} \mathcal{L}_{adv}(\theta_{enc}, \mathcal{W} | \theta_D) 
-\end{equation}
-
-### Why adversarial training? 
+__How does it work?__ Let's say our goal is to perform NLI in German without translating the training set to German (or the test set to English). We first train an LSTM encoder and a linear classifier on MultiNLI data. Then we make a copy of the encoder, so that we have two identical encoders; one for the source language (En) and one for the target language (De). Then, by using parallel sentence pairs in English and German (from Europarl or OpenSubtitles 2018 corpora), we align the German encoder to the English encoder so that they produce close sentence representations in the embedding space. We use an adversarial objective in addition to the alignment loss proposed by [Conneau et al. (2018)](https://arxiv.org/pdf/1809.05053.pdf). Specifically, we try to fool a discriminator at the same time with alignment. We incorporate adversarial training to the process, since our goal is to produce close embeddings in the space so that a linear classifier trained for NLI is not able to tell the difference between English embeddings and German embeddings. This way, we can perform cross-lingual NLI without needing translation. 
 
 The languages are referred by the following codes throughout the project:
 ```

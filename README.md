@@ -8,7 +8,17 @@ __A more formal definition:__ Natural Language Inference, also known as Recogniz
 
 ### How to perform cross-lingual NLI?
 
-Cross-lingual NLI involves training a natural language inference model in a language and predicting entailment labels for another language. 
+Cross-lingual NLI involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
+
+__How does it work?__ Let's say our goal is to perform NLI in German. We first train an LSTM encoder and a linear classifier on MultiNLI data. Then we make a copy of the encoder, so that we have two identical encoders; one for the source language (En) and one for the target language (De). Then, by using parallel sentence pairs in English and German (from Europarl or OpenSubtitles 2018 corpora), we align the German encoder to the English encoder so that they produce close sentence representations in the embedding space. 
+
+We use the following alignment objective:
+
+\begin{equation}
+\mathcal{L}(x, y) = dist(x, y) \\ & - \lambda \left[dist(x_c, y) + dist(x, y_c)\right] + \lambda_{adv} \mathcal{L}_{adv}(\theta_{enc}, \mathcal{W} | \theta_D) 
+\end{equation}
+
+### Why adversarial training? 
 
 The languages are referred by the following codes throughout the project:
 ```

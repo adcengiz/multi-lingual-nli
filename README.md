@@ -18,18 +18,18 @@ __How does it work?__ Let's say our goal is to perform NLI in German without tra
   
   __3) Inference on XNLI (Non-English NLI Data):__ We build cross-lingual NLI models by training on MultiNLI and aligning encoders for the following languages:
       ```
-      en: English
-      ar: Arabic
-      bg: Bulgarian
-      de: German
-      el: Greek
-      es: Spanish
-      fr: French
-      hi: Hindi
-      ru: Russian
-      th: Thai
-      tr: Turkish
-      vi: Vietnamese
-      zh: Chinese
+      en: English,
+      ar: Arabic,
+      bg: Bulgarian,
+      de: German,
+      el: Greek,
+      es: Spanish,
+      fr: French,
+      hi: Hindi,
+      ru: Russian,
+      th: Thai,
+      tr: Turkish,
+      vi: Vietnamese,
+      zh: Chinese.
       ```
  

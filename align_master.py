@@ -161,28 +161,20 @@ def tokenize_xnli(dataset, remove_punc=False, lang="en"):
     return dataset, all_tokens
 
 def build_vocab(all_tokens, max_vocab_size):
-    token_counter = Counter(all_tokens)
-    vocab, count = zip(*token_counter.most_common(max_vocab_size))
-    id2token = [*vocab]
-    token2id = dict(zip(vocab, range(2,2+len(vocab))))
-    id2token = ['<PAD>', '<UNK>'] + id2token
-    token2id["<PAD>"] = 0
-    token2id["<UNK>"] = 1
-    return token2id, id2token
+    counter_ = Counter(all_tokens)
+    vocab, count = zip(*counter_.most_common(max_vocab_size))
+    id2tok = [*vocab]
+    tok2id = dict(zip(vocab, range(2,2+len(vocab))))
+    id2tok = ['<PAD>', '<UNK>'] + id2tok
+    tok2id["<PAD>"] = 0
+    tok2id["<UNK>"] = 1
+    return tok2id, id2tok
 
-def build_tok2id(id2token):
-    token2id = {}
-    for i in range(len(id2token)):
-        token2id[id2token[i]] = i
-    return token2id
-
-def init_embedding_weights(vectors, token2id, id2token, embedding_size):
-    weights = np.zeros((len(id2token), embedding_size))
-    for idx in range(2, len(id2token)):
-        token = id2token[idx]
-        weights[idx] = vectors[token]
-    weights[1] = np.random.randn(embedding_size)
-    return weights
+def build_tok2id(id2tok):
+    tok2id = {}
+    for i in range(len(id2tok)):
+        tok2id[id2tok[i]] = i
+    return tok2id
 
 def update_vocab_keys(src_vocab, trg_vocab):
     for x in [*src_vocab.keys()]:

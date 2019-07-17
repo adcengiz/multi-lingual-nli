@@ -145,28 +145,20 @@ def tokenize_xnli(dataset, remove_punc=False, lang="en"):
         for s in ["sentence1", "sentence2"]:
             dataset["{}_tokenized".format(s)] = dataset[s].\
             apply(lambda x: [a + ".ar" for a in nltk.tokenize.wordpunct_tokenize(x)])
-        ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
-        ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
-        all_tokens = all_s1_tokens + all_s2_tokens
     elif lang == "zh":
         for s in ["sentence1", "sentence2"]:
             dataset["{}_tokenized".format(s)] = dataset[s].\
             apply(lambda x: [z + ".zh" for z in ' '.join(jieba.cut(x, cut_all=True)).split(" ")])
-        ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
-        ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
-        all_tokens = all_s1_tokens + all_s2_tokens
     else:
         for s in ["sentence1", "sentence2"]:
             dataset["{}_tokenized".format(s)] = dataset[s].\
             apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
             dataset["{}_tokenized".format(s)] = dataset["{}_tokenized".format(s)].\
             apply(lambda x: [a+"."+lang for a in x])
-        ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
-        ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
-        all_tokens = all_s1_tokens + all_s2_tokens
+    ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
+    ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
+    all_tokens = all_s1_tokens + all_s2_tokens
     return dataset, all_tokens
-
-
 
 def build_vocab(all_tokens, max_vocab_size):
     token_counter = Counter(all_tokens)

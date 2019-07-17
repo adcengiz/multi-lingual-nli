@@ -191,24 +191,23 @@ def update_vocab_keys(src_vocab, trg_vocab):
     for y in [*trg_vocab.keys()]:
         trg_vocab[y + ".{}".format(config.experiment_lang)] = trg_vocab[y]
         trg_vocab.pop(y)
-    
     src_vocab.update(trg_vocab)
     return src_vocab
 
-def init_embedding_weights(vectors, token2id, id2token, embedding_size):
-    weights = np.zeros((len(id2token), embedding_size))
-    for idx in range(2, len(id2token)):
-        token = id2token[idx]
-        weights[idx] = vectors[token]
-    weights[1] = np.random.randn(embedding_size)
+def init_embedding_weights(vecs, tok2id, id2tok, emb_size):
+    weights = np.zeros((len(id2tok), emb_size))
+    for idx in range(2, len(id2tok)):
+        tok = id2tok[idx]
+        weights[idx] = vecs[tok]
+    weights[1] = np.random.randn(emb_size)
     return weights
 
-def create_contrastive_dataset(dataset, trg_lang):
-    shuffle_ix_src = torch.randperm(len(dataset))
-    src_c = np.array([*dataset["{}_tokenized".format("en")].values])[shuffle_ix_src]
-    trg_c = dataset["{}_tokenized".format(trg_lang)]
-    contrastive_df = pd.DataFrame({"en_tokenized": src_c, "{}_tokenized".format(trg_lang): trg_c})
-    return contrastive_df
+def create_contrastive_dataset(data, trg_lang):
+    shf_ix = torch.randperm(len(data))
+    src_c = np.array([*data["{}_tokenized".format("en")].values])[shf_ix]
+    trg_c = data["{}_tokenized".format(trg_lang)]
+    c_df = pd.DataFrame({"en_tokenized": src_c, "{}_tokenized".format(trg_lang): trg_c})
+    return c_df
 
 def read_and_tokenize_opus_data(lang="tr"):
     all_en_tokens = []
@@ -234,8 +233,8 @@ def read_and_tokenize_opus_data(lang="tr"):
     return dataset, all_en_tokens, all_target_tokens
 
 def read_and_tokenize_europarl_data(lang="de"):
-    all_en_tokens = []
-    all_target_tokens = []
+    all_en_tok = []
+    all_target_tok = []
     path_en = europarl_path + "/{}_en/europarl-v7.{}-en.en".format(lang, lang)
     path_target = europarl_path + "/{}_en/europarl-v7.{}-en.{}".format(lang, lang, lang)
     en_corpus = open(path_en, "r")
@@ -246,9 +245,9 @@ def read_and_tokenize_europarl_data(lang="de"):
     for i in ["en", lang]:
         dataset["{}_tokenized".format(i)] = dataset[i].apply(lambda x: "".join(c for c in x if c not in string.punctuation).lower().split(" "))
         dataset["{}_tokenized".format(i)] = dataset["{}_tokenized".format(i)].apply(lambda x:[a+".{}".format(i) for a in x])
-    dataset["en_tokenized"].apply(lambda x: all_en_tokens.extend(x))
-    dataset["{}_tokenized".format(lang)].apply(lambda x: all_target_tokens.extend(x))
-    return dataset, all_en_tokens, all_target_tokens
+    dataset["en_tokenized"].apply(lambda x: all_en_tok.extend(x))
+    dataset["{}_tokenized".format(lang)].apply(lambda x: all_target_tok.extend(x))
+    return dataset, all_en_tok, all_target_tok
 
 def prepare_contrastive_data(config):
     c_df = create_contrastive_dataset(data_en_target, config.val_test_lang)

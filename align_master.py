@@ -255,10 +255,10 @@ def prepare_contrastive_data(config):
 
 def loss_align(en_rep, target_rep, en_c, target_c, lambda_reg):
     """:param en_rep: output repr of eng encoder (batch_size, hidden_size)
-        :param target_rep: output repr of target encoder (batch_size, hidden_size)
-        :param en_c: contrastive sentence repr from eng encoder (batch_size, hidden_size)
-        :param target_c: contrastive sentence repr form target encoder (batch_size, hidden_size)
-        :param lambda_reg: regularization coef [default: 0.25]
+       :param target_rep: output repr of target encoder (batch_size, hidden_size)
+       :param en_c: contrastive sentence repr from eng encoder (batch_size, hidden_size)
+       :param target_c: contrastive sentence repr form target encoder (batch_size, hidden_size)
+       :param lambda_reg: regularization coef [default: 0.25]
         
         Returns: L_align = l2norm (en_rep, target_rep) - lambda_reg( l2norm (en_c, target_rep) + l2norm (en_rep, target_c))
         """

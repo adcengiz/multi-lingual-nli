@@ -1,12 +1,15 @@
-## Learning Sentence Representations for Cross-Lingual NLI
-
-### What is NLI (Natural Language Inference)?
+# Learning Sentence Representations for Cross-Lingual NLI
+## What is NLI (Natural Language Inference)?
 
 Given a premise-hypothesis pair, NLI is the task of understanding whether the premise _entails_ the hypothesis, whether it _contradicts_ the hypothesis or neither (the relationship is _neutral_).
 
 __A more formal definition:__ Natural Language Inference, also known as Recognizing Textual Entailment, involves determining whether a sentence describing a situation, or premise, shares similar truth conditions, or entails another sentence called the hypothesis. Hypotheses with conflicting truth conditions are said to contradict the premise, and indeterminate relationships between the truth conditions of the two sentences are said to be neutral.
 
+__Cross-lingual NLI__ involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
+
 ### Translate-Train
+
+Translate-Train method uses machine translation to generate training sets in the XNLI dev and test languages. Here we use the machine-translated training set provided on [XNLI repo)](https://github.com/facebookresearch/XNLI) to reproduce the translate-train results of [Conneau et al. (2018)](https://arxiv.org/pdf/1809.05053.pdf). We use this method as our primary baseline. 
 
 ### Translate-Test 
 
@@ -15,8 +18,6 @@ __A more formal definition:__ Natural Language Inference, also known as Recogniz
 ### MultiNLI-Only
 
 ## How to perform cross-lingual NLI?
-
-Cross-lingual NLI involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
 
 __How does it work?__ Let's say our goal is to perform NLI in German without translating the training set to German (or the test set to English). Each experiment consists of three following steps:
   

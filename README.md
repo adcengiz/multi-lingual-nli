@@ -1,4 +1,4 @@
-## Learning Sentence Representations for Cross-Lingual NLI with an Adversarial Objective
+## Learning Sentence Representations for Cross-Lingual NLI
 
 ### What is NLI (Natural Language Inference)?
 

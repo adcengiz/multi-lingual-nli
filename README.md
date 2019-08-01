@@ -49,4 +49,8 @@ __How does it work?__ Let's say our goal is to perform NLI in German without tra
       vi: Vietnamese,
       zh: Chinese.
       ```
+           
+### Downloading Aligned fastText Vectors
+
+```curl -o wiki.en.align.vec https://dl.fbaipublicfiles.com/fasttext/vectors-aligned/wiki.en.align.vec```
  

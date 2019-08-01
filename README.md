@@ -6,7 +6,15 @@ Given a premise-hypothesis pair, NLI is the task of understanding whether the pr
 
 __A more formal definition:__ Natural Language Inference, also known as Recognizing Textual Entailment, involves determining whether a sentence describing a situation, or premise, shares similar truth conditions, or entails another sentence called the hypothesis. Hypotheses with conflicting truth conditions are said to contradict the premise, and indeterminate relationships between the truth conditions of the two sentences are said to be neutral.
 
-### How to perform cross-lingual NLI?
+### Translate-Train
+
+### Translate-Test 
+
+### SNLI-Only
+
+### MultiNLI-Only
+
+## How to perform cross-lingual NLI?
 
 Cross-lingual NLI involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
 

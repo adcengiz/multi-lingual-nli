@@ -21,6 +21,10 @@ To run an English-only NLI model on SNLI data [].
 
 To run an English-only NLI model on MultiNLI data [].
 
+### Train XNLI
+
+[Insert instructions]
+
 ## How to perform cross-lingual NLI?
 
 __How does it work?__ Let's say our goal is to perform NLI in German without translating the training set to German (or the test set to English). Each experiment consists of three following steps:

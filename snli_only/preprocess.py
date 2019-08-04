@@ -27,21 +27,40 @@ from torch.utils.data import Dataset
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-#PAD_IDX = 0
-#UNK_IDX = 1
-#label_dict = {"entailment":0, "neutral":1, "contradiction":2}
-#opus_path = "data/translation/opus"
-#europarl_path = "data/translation/europarl"
-#un_path = "data/translation/un_parallel_corpora"
-#snli_path = "../data/nli_corpora/snli/"
-#align_path = "../data/vecs/wiki.{}.align.vec"
-#multi_path = "../data/vecs/cc.{}.vec.gz"
+UNK_IDX = 1
+PAD_IDX = 0
+
+label_dict = {"entailment":0, "neutral":1, "contradiction":2}
+opus_path = "data/translation/opus"
+europarl_path = "data/translation/europarl"
+un_path = "data/translation/un_parallel_corpora"
+snli_path = "../data/nli_corpora/snli/"
+align_path = "../data/vecs/wiki.{}.align.vec"
+multi_path = "../data/vecs/cc.{}.vec.gz"
+
+no_cuda = False
+cuda = not no_cuda and torch.cuda.is_available()
+seed = 1
+device = torch.device("cuda" if cuda else "cpu")
 
 def define_label_dict():
     return {"entailment":0, "neutral":1, "contradiction":2}
 
 def define_indices():
     return 0, 1
+
+def define_paths():
+    snli_path = "../data/nli_corpora/snli/"
+    align_path = "../data/vecs/wiki.{}.align.vec"
+    multi_path = "../data/vecs/cc.{}.vec.gz"
+    return snli_path, align_path, multi_path
+
+def define_device():
+    no_cuda = False
+    cuda = not no_cuda and torch.cuda.is_available()
+    seed = 1
+    device = torch.device("cuda" if cuda else "cpu")
+    return device
 
 class SNLIconfig:
     def __init__(self, corpus, val_test_lang, max_sent_len, max_vocab_size, epochs, batch_size,
@@ -56,6 +75,9 @@ class SNLIconfig:
         self.hidden_dim = hidden_dim
         self.dropout = dropout
         self.lr = lr
+        
+config = SNLIconfig(corpus = "snli", val_test_lang = "en", max_sent_len = 50, max_vocab_size = 100000,
+             epochs = 15, batch_size = 64, embed_dim = 300, hidden_dim = 512, dropout = 0.1, lr = 1e-3)
 
 def read_xnli(lang):
     fname = "/scratch/adc563/nlu_project/data/XNLI/xnli.{}.jsonl"
@@ -78,6 +100,15 @@ def load_en_vecs(fname):
         data[tokens[0]] = [*map(float, tokens[1:])]
     return data
 
+def load_vectors(fname):
+    fin = io.open(fname, 'r', encoding='utf-8', newline='\n', errors='ignore')
+    n, d = map(int, fin.readline().split())
+    data = {}
+    for line in fin:
+        tokens = line.rstrip().split(' ')
+        data[tokens[0]] = map(float, tokens[1:])
+    return data
+
 def load_multilingual_vectors(lang, vec_type="align"):
     """vec_type (str): 'align' or 'multi'
         align - loads aligned multilingual wiki fastText vectors for chosen language
@@ -98,18 +129,19 @@ def load_multilingual_vectors(lang, vec_type="align"):
 def read_nli(nli_corpus = "snli"):
     if nli_corpus == "snli":
         path_ = snli_path
-        train = pd.read_json("{}_{}.jsonl".format(path_,"train"), lines=True)
-        dev = pd.read_json("{}_{}.jsonl".format(path_,"dev"), lines=True)
-        test = pd.read_json("{}_{}.jsonl".format(path_,"test"), lines=True)
-        for x in [train, dev, test]:
-            x = x[x["gold_label"] != "-"]
+        train = pd.read_json("{}snli_1.0_{}.jsonl".format(path_,"train"), lines=True)
+        dev = pd.read_json("{}snli_1.0_{}.jsonl".format(path_,"dev"), lines=True)
+        test = pd.read_json("{}snli_1.0_{}.jsonl".format(path_,"test"), lines=True)
+        train = train[train["gold_label"] != "-"]
+        dev = dev[dev["gold_label"] != "-"]
+        test = test[test["gold_label"] != "-"]
     elif nli_corpus == "multinli":
         path_ = multinli_path
         train = pd.read_json("{}_{}.jsonl".format(path_,"train"), lines=True)
         dev = pd.read_json("{}_{}_matched.jsonl".format(path_, "dev"), lines=True)
         test = None
-        for x in [train, dev]:
-            x = x[x["gold_label"] != "-"]
+        ftrain = train[train["gold_label"] != "-"]
+        dev = dev[dev["gold_label"] != "-"]
     return train, dev, test
 
 def write_numeric_label(train, dev, test, nli_corpus="multinli"):
@@ -139,7 +171,7 @@ def tokenize_xnli(dataset, remove_punc=False, lang="en"):
         all_tokens = all_s1_tokens + all_s2_tokens
     else:
         for s in ["sentence1", "sentence2"]:
-            dataset["{}_tokenized".format(s)] = dataset[s].apply(lambda x: [a + ".ar" for a in nltk.tokenize.wordpunct_tokenize(x)])
+            dataset["{}_tokenized".format(s)] = dataset[s].apply(lambda x: [a + ".{}".format(lang) for a in nltk.tokenize.wordpunct_tokenize(x)])
         ext = dataset["sentence1_tokenized"].apply(lambda x: all_s1_tokens.extend(x))
         ext1 = dataset["sentence2_tokenized"].apply(lambda x: all_s2_tokens.extend(x))
         all_tokens = all_s1_tokens + all_s2_tokens
@@ -164,7 +196,7 @@ def init_embedding_weights(vectors, token2id, id2token, embedding_size):
     weights = np.zeros((len(id2token), embedding_size))
     for idx in range(2, len(id2token)):
         token = id2token[idx]
-        weights[idx] = vectors[token]
+        weights[idx] = [*vectors[token]]
     weights[1] = np.random.randn(embedding_size)
     return weights
 
@@ -229,6 +261,13 @@ def update_vocab_keys(src_vocab, trg_vocab):
         
     src_vocab.update(trg_vocab)
     return src_vocab
+
+def update_single_vocab_keys(voc):
+    for x in [*voc.keys()]:
+        voc[x + ".en"] = voc[x]
+        voc.pop(x)
+    return voc
+
 
 class NLIDataset(Dataset):
     def __init__(self, tokenized_dataset, max_sentence_length, token2id, id2token):

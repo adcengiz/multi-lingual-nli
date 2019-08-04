@@ -27,6 +27,11 @@ from torch.utils.data import Dataset
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+no_cuda = False
+cuda = not no_cuda and torch.cuda.is_available()
+seed = 1
+device = torch.device("cuda" if cuda else "cpu")
+
 class biLSTM(nn.Module):
     
     def __init__(self, hidden_size, embedding_weights, percent_dropout, vocab_size, num_layers=1, input_size=300):

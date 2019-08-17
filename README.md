@@ -54,7 +54,7 @@ __How does it work?__ Let's say our goal is to perform NLI in German without tra
 
 ```curl -o wiki.en.align.vec https://dl.fbaipublicfiles.com/fasttext/vectors-aligned/wiki.<lang>.align.vec```
 
-Alternatively, you can use multilingual fastText vectors. 
+Alternatively, you can use multilingual fastText [vectors](https://fasttext.cc/docs/en/crawl-vectors.html). 
 
 ### Packages You Will Need
 

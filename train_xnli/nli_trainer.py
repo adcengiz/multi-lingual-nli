@@ -28,7 +28,12 @@ from torch.utils.data import Dataset
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-def train(RNN, Linear_Classifier, DataLoader, criterion, optimizer, epoch):
+no_cuda = False
+cuda = not no_cuda and torch.cuda.is_available()
+seed = 1
+device = torch.device("cuda" if cuda else "cpu")
+
+def train_(RNN, Linear_Classifier, DataLoader, criterion, optimizer, epoch):
     
     RNN.train()
     Linear_Classifier.train()
@@ -58,7 +63,7 @@ def train(RNN, Linear_Classifier, DataLoader, criterion, optimizer, epoch):
     optimizer.zero_grad()
     return total_loss
 
-def test(RNN, Linear_Classifier, DataLoader, criterion):
+def test_(RNN, Linear_Classifier, DataLoader, criterion):
 
     RNN.eval()
     Linear_Classifier.eval()
@@ -85,7 +90,7 @@ def test(RNN, Linear_Classifier, DataLoader, criterion):
 
 def accuracy(RNN, Linear_Classifier, DataLoader, criterion):
     
-    _, predicted, true_labels = test(RNN = RNN,  Linear_Classifier = Linear_Classifier,
+    _, predicted, true_labels = test_(RNN = RNN,  Linear_Classifier = Linear_Classifier,
                                      DataLoader = DataLoader, criterion = criterion)
 
     predicted = predicted.max(1)[1]

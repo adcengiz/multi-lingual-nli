@@ -1,9 +1,18 @@
-import io
+import pickle
+import random
+import spacy
+import errno
+import glob
+import string
 import os
-import re
-import time
+import jieba
+import nltk
 import functools
 import numpy as np
+import pandas as pd
+from collections import Counter
+from collections import defaultdict
+from argparse import ArgumentParser
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -11,6 +20,24 @@ from torch.optim import lr_scheduler
 from torch.utils.data import Dataset
 import torch.nn.functional as F
 from torch.autograd import Variable
+
+class XNLIconfig:
+    def __init__(self, val_test_lang, max_sent_len, max_vocab_size, epochs, batch_size,
+                 embed_dim, hidden_dim, dropout, lr, experiment_lang):
+        self.val_test_lang = val_test_lang
+        self.max_sent_len = max_sent_len
+        self.max_vocab_size = max_vocab_size
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.embed_dim = embed_dim
+        self.hidden_dim = hidden_dim
+        self.dropout = dropout
+        self.lr = lr
+        self.experiment_lang = experiment_lang
+        
+config = XNLIconfig(val_test_lang = "de", max_sent_len = 50, max_vocab_size = 100000,
+                    epochs = 15, batch_size = 256, embed_dim = 300, hidden_dim = 512, dropout = 0.1, lr = 1e-3,
+                    experiment_lang = "de")
 
 class Discriminator(nn.Module):
 

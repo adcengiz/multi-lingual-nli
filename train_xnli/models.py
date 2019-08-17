@@ -27,6 +27,11 @@ from torch.utils.data import Dataset
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+no_cuda = False
+cuda = not no_cuda and torch.cuda.is_available()
+seed = 1
+device = torch.device("cuda" if cuda else "cpu")
+
 class biLSTM(nn.Module):
     
     def __init__(self, hidden_size, embedding_weights, percent_dropout, vocab_size, num_layers=1, input_size=300):
@@ -75,6 +80,9 @@ class Linear_Layers(nn.Module):
         self.num_classes = classes
         self.mlp = nn.Sequential(
             nn.Linear(4 * self.hidden_size, self.hidden_size_2),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=self.percent_dropout),
+            nn.Linear(self.hidden_size_2, self.hidden_size_2),
             nn.ReLU(inplace=True),
             nn.Dropout(p=self.percent_dropout),
             nn.Linear(self.hidden_size_2, self.num_classes))

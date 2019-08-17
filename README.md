@@ -15,15 +15,15 @@ Translate-Test method involves translating the development and test sets to the 
 
 ### SNLI-Only
 
-In this folder you can find the notebook and .py files with directions for training an SNLI model - English-only.
+In this folder you can find the notebook and .py files with directions for training an ```SNLI model``` - English-only.
 
 ### MultiNLI-Only
 
-Here, you can find the notebook and .py files with directions for training a MultiNLI model - English-only.
+Here, you can find the notebook and .py files with directions for training a ```MultiNLI model``` - English-only.
 
 ### Train XNLI
 
-Holds the notebook that explains how a target language encoder is aligned to a source language encoder using parallel corpora, and how we use the aligned encoder to perform cross-lingual NLI without translation. Also, below is an explanation of the whole process.
+Holds the notebook that explains how a target language encoder is aligned to a source language encoder using parallel corpora, and how we use the aligned encoder to perform ```cross-lingual NLI without translation```. Also, below is an explanation of the whole process.
 
 ## How to perform cross-lingual NLI?
 

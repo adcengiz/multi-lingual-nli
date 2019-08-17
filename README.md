@@ -1,17 +1,13 @@
-# Learning Sentence Representations for Cross-Lingual NLI
+# Cross-Lingual NLI from Scratch
 ## What is NLI (Natural Language Inference)?
 
 Given a premise-hypothesis pair, NLI is the task of understanding whether the premise _entails_ the hypothesis, whether it _contradicts_ the hypothesis or neither (the relationship is _neutral_).
 
 __Cross-lingual NLI__ involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
 
-### Translate-Train
+### Train XNLI Folder
 
-Translate-Train method uses machine translation to generate training sets in the XNLI dev and test languages. Here we use the machine-translated training sets provided on [XNLI repo](https://github.com/facebookresearch/XNLI) to reproduce the translate-train results of [Conneau et al. (2018)](https://arxiv.org/pdf/1809.05053.pdf). We use this method as our primary baseline. 
-
-### Translate-Test 
-
-Translate-Test method involves translating the development and test sets to the training/source language (English). Machine-translated dev and test sets are also provided on [XNLI repo](https://github.com/facebookresearch/XNLI). We reproduce the translate-test results to use as our secondary baseline.
+Holds the notebook that explains how a target language encoder is aligned to a source language encoder using parallel corpora, and how we use the aligned encoder to perform ```cross-lingual NLI without translation```. Also, below is an explanation of the whole process.
 
 ### SNLI-Only
 
@@ -21,9 +17,13 @@ In this folder you can find the notebook and .py files with directions for train
 
 Here, you can find the notebook and .py files with directions for training a ```MultiNLI model``` - English-only.
 
-### Train XNLI
+### Translate-Train
 
-Holds the notebook that explains how a target language encoder is aligned to a source language encoder using parallel corpora, and how we use the aligned encoder to perform ```cross-lingual NLI without translation```. Also, below is an explanation of the whole process.
+Translate-Train method uses machine translation to generate training sets in the XNLI dev and test languages. Here we use the machine-translated training sets provided on [XNLI repo](https://github.com/facebookresearch/XNLI) to reproduce the translate-train results of [Conneau et al. (2018)](https://arxiv.org/pdf/1809.05053.pdf). We use this method as our primary baseline. 
+
+### Translate-Test 
+
+Translate-Test method involves translating the development and test sets to the training/source language (English). Machine-translated dev and test sets are also provided on [XNLI repo](https://github.com/facebookresearch/XNLI). We reproduce the translate-test results to use as our secondary baseline.
 
 ## How to perform cross-lingual NLI?
 

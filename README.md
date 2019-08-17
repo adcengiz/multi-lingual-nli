@@ -15,15 +15,15 @@ Translate-Test method involves translating the development and test sets to the 
 
 ### SNLI-Only
 
-To run an English-only NLI model on SNLI data [].
+In this folder you can find the notebook and .py files with directions for training an SNLI model - English-only.
 
 ### MultiNLI-Only
 
-To run an English-only NLI model on MultiNLI data [].
+Here, you can find the notebook and .py files with directions for training a MultiNLI model - English-only.
 
 ### Train XNLI
 
-[Insert instructions]
+Holds the notebook that explains how a target language encoder is aligned to a source language encoder using parallel corpora, and how we use the aligned encoder to perform cross-lingual NLI without translation. Also, below is an explanation of the whole process.
 
 ## How to perform cross-lingual NLI?
 
@@ -53,4 +53,12 @@ __How does it work?__ Let's say our goal is to perform NLI in German without tra
 ### Downloading Aligned fastText Vectors
 
 ```curl -o wiki.en.align.vec https://dl.fbaipublicfiles.com/fasttext/vectors-aligned/wiki.en.align.vec```
- 
+
+### Packages You Will Need
+
+  ```
+  pytorch
+  nltk: for standard English tokenizer
+  jieba: for Chinese tokenizer
+  spacy
+  ```

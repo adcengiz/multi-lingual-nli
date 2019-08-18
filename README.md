@@ -3,6 +3,8 @@
 
 Given a premise-hypothesis pair, NLI is the task of understanding whether the premise _entails_ the hypothesis, whether it _contradicts_ the hypothesis or neither (the relationship is _neutral_).
 
+![Spanish_Chinese_Dev_Acc](presentation/spanish_chinese_accuracy.png)
+
 __Cross-lingual NLI__ involves training a natural language inference model in a language and predicting entailment labels for data in another language. For example, in this project, we train an NLI model on MultiNLI data - which is available only in English - and evaluate it for use in other languages. 
 
 ### Train XNLI Folder
